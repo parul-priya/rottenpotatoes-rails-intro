@@ -4,18 +4,17 @@
 
 = form_tag movies_path, :method => :get, :id => "ratings_form" do
   Include:
-  - @all_ratings.each do |rating|
+  - @all_ratings.keys.each do |rating|
     = rating
-    = check_box_tag "ratings[#{rating}]", 1, @all_ratings[rating], :id => "ratings_#{rating}"
+    = check_box_tag "ratings[#{rating}]", 1 , @all_ratings[rating], :id => "ratings_#{rating}"
   = submit_tag 'Refresh', :id => "ratings_submit"
 
 %table#movies
-
   %thead
     %tr
-      %th{:class => ("hilite" if params[:sortby] == "title")}= link_to "Movie Title", {:sortby => "title"}, :id => "title_header"
+      %th{:class=>("hilite" if @sort_by == "title")}= link_to "Movie Title", {:sortby => "title"}, :id => "title_header"
       %th Rating
-      %th{:class => ("hilite" if params[:sortby] == "releasedate")}= link_to "Release Date", {:sortby => "releasedate"}, :id => "release_date_header"
+      %th{:class=>("hilite" if @sort_by == "releasedate")}= link_to "Release Date", {:sortby => "releasedate"}, :id => "release_date_header"
       %th More Info
   %tbody
     - @movies.each do |movie|
