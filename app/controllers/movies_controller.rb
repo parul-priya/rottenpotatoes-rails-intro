@@ -11,11 +11,8 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
-
-#changes made to index for sorting by title and release date
   def index
-  	@all_ratings = {'G'=>true,'PG'=>true,'PG-13'=>true,'R'=>true}
-  	
+  	@all_ratings = Movie.select(:rating).all.uniq
   	
   	@sort_by = session[:s_sortby]
   	if params.has_key?(:sortby)
@@ -24,11 +21,13 @@ class MoviesController < ApplicationController
   			@sort_by = params[:sortby]
   		end
   	end
+  	
   	if params.has_key?("ratings")
   		if session[:sratings].keys != params["ratings"]
   			if params["ratings"].keys.size > 0
   				ratings = params["ratings"]
   				ratings = ratings.keys
+  				
   				@all_ratings.keys.each do |rating|
   					if params["ratings"][rating] == "1"
   						@all_ratings[rating] = true
@@ -43,29 +42,29 @@ class MoviesController < ApplicationController
   	
   	if session[:s_sortby] == "title"
   		ratings = []
-  		session[:sratings].keys.each do |k|
-  			if session[:sratings][k] == true
-  				ratings.insert(0, k)
+  		session[:sratings].keys.each do |r|
+  			if session[:sratings][r] == true
+  				ratings.insert(0, r)
   			end
   		end
-  		@movies = Movie.where(:rating => ratings ).sort_by { |r| r.title }
+  		@movies = Movie.where(:rating => ratings ).sort_by { |movie| movie.title }
   		@all_ratings = session[:sratings]
   		
   	elsif session[:s_sortby] == "releasedate"
   		ratings = []
-  		session[:sratings].keys.each do |k|
-  			if session[:sratings][k] == true
-  				ratings.insert(0, k)
+  		session[:sratings].keys.each do |r|
+  			if session[:sratings][r] == true
+  				ratings.insert(0, r)
   			end
   		end
-  		@movies = Movie.where(:rating => ratings ).sort_by { |r| r.release_date }
+  		@movies = Movie.where(:rating => ratings ).sort_by { |movie| movie.release_date }
   		@all_ratings = session[:sratings]
   		
   	else
   		ratings = []
-  		@all_ratings.keys.each do |k|
-  			if @all_ratings[k] == true
-  				ratings.insert(0, k)
+  		@all_ratings.keys.each do |r|
+  			if @all_ratings[r] == true
+  				ratings.insert(0, r)
   			end
   		end
   		session[:sratings] = @all_ratings
