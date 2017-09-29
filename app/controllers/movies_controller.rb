@@ -15,7 +15,27 @@ class MoviesController < ApplicationController
 #changes made to index for sorting by title and release date
   def index
     #if sorted by title
-    if params[:sortby] == "title"
+    
+    @all_ratings = {'G' => true, 'PG' => true, 'PG-13' => true, 'R' => true}
+    
+    @sort = params[:sortby]
+    
+    if params.has_key?(:commit)
+      ratings = params["ratings"]
+      ratings = ratings.keys
+      
+      @all_ratings.keys.each do |rating|
+        if params["ratings"][rating] == '1'
+          @all_ratings[rating] = true
+        else
+          @all_ratings[rating] = false
+        end
+      end
+      
+      @movies = Movie.where(:rating => ratings)
+      
+    
+    elsif params[:sortby] == "title"
       @movies = Movie.all.sort_by { |movie| movie.title }
       
     #if sorted by release date
@@ -25,6 +45,7 @@ class MoviesController < ApplicationController
     else
       @movies = Movie.all
     end
+    
   end
 
   def new
