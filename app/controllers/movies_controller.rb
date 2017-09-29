@@ -1,7 +1,8 @@
 class MoviesController < ApplicationController
 
+#added a parameter to movie to check basis of sorting
   def movie_params
-    params.require(:movie).permit(:title, :rating, :description, :release_date)
+    params.require(:movie).permit(:title, :rating, :description, :release_date, :sortby)
   end
 
   def show
@@ -10,8 +11,20 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
+
+#changes made to index for sorting by title and release date
   def index
-    @movies = Movie.all
+    #if sorted by title
+    if params[:sortby] == "title"
+      @movies = Movie.all.sort_by { |movie| movie.title }
+      
+    #if sorted by release date
+    elsif params[:sortby] == "releasedate"
+      @movies = Movie.all.sort_by { |movie| movie.release_date }
+      
+    else
+      @movies = Movie.all
+    end
   end
 
   def new
@@ -41,5 +54,5 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-
+  
 end
